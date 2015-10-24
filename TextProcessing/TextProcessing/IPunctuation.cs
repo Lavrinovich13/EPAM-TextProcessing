@@ -8,6 +8,6 @@ namespace TextProcessing
 {
     interface IPunctuation : IPartOfSentence
     {
-        Symbol Value { get; }
+        Symbol _Value { get; }
     }
 }

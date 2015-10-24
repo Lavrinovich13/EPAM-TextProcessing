@@ -8,9 +8,11 @@ namespace TextProcessing
 {
     class Word : IWord
     {
-        public Symbol[] Value
+        public Symbol[] _Value { get; private set; }
+
+        public Word(Symbol[] word)
         {
-            get { throw new NotImplementedException(); }
+            _Value = word;
         }
 
         public string GetString()

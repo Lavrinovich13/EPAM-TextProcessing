@@ -41,10 +41,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IParser.cs" />
     <Compile Include="IPartOfSentence.cs" />
     <Compile Include="IPunctuation.cs" />
     <Compile Include="ISentence.cs" />
     <Compile Include="IWord.cs" />
+    <Compile Include="Parser.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Punctuation.cs" />

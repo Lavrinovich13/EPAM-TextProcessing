@@ -1,1 +1,6 @@
 D:\3 курс проекты\TextProcessing\TextProcessing\bin\Debug\TextProcessing.exe.config
+D:\3 курс проекты\TextProcessing\TextProcessing\obj\Debug\TextProcessing.csprojResolveAssemblyReference.cache
+D:\3 курс проекты\TextProcessing\TextProcessing\bin\Debug\TextProcessing.exe
+D:\3 курс проекты\TextProcessing\TextProcessing\bin\Debug\TextProcessing.pdb
+D:\3 курс проекты\TextProcessing\TextProcessing\obj\Debug\TextProcessing.exe
+D:\3 курс проекты\TextProcessing\TextProcessing\obj\Debug\TextProcessing.pdb

@@ -7,6 +7,16 @@ namespace TextProcessing
 {
     class Symbol
     {
-        string Value { get; }
+        public string _Value { get; private set; }
+
+        public Symbol(char symbol)
+        {
+            _Value = symbol.ToString();
+        }
+
+        public Symbol(string symbol)
+        {
+            _Value = symbol;
+        }
     }
 }

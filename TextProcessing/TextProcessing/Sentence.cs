@@ -6,8 +6,19 @@ using System.Threading.Tasks;
 
 namespace TextProcessing
 {
-    class Sentence
+    class Sentence : ISentence
     {
-        private IList<IPartOfSentence> Items;
+        private ICollection<IPartOfSentence> _Items;
+
+        public Sentence()
+        {
+            _Items = new List<IPartOfSentence>();
+        }
+
+        public Sentence(ICollection<IPartOfSentence> items)
+        {
+            _Items = items;
+        }
+
     }
 }

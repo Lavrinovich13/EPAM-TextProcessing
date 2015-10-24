@@ -8,6 +8,16 @@ namespace TextProcessing
 {
     class Text
     {
-        private IList<ISentence> sentences;
+        private ICollection<ISentence> _Sentences;
+
+        public Text()
+        {
+            _Sentences = new List<ISentence>();
+        }
+
+        public Text(ICollection<ISentence> sentences)
+        {
+            _Sentences = sentences;
+        }
     }
 }

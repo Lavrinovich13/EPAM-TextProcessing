@@ -8,9 +8,11 @@ namespace TextProcessing
 {
     class Punctuation : IPunctuation
     {
-        public Symbol Value
+        public Symbol _Value { get; private set; }
+
+        public Punctuation(Symbol punctuation)
         {
-            get { throw new NotImplementedException(); }
+            _Value = punctuation;
         }
 
         public string GetString()
