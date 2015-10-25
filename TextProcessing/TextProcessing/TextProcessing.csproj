@@ -41,19 +41,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="IParser.cs" />
-    <Compile Include="IPartOfSentence.cs" />
-    <Compile Include="IPunctuation.cs" />
-    <Compile Include="ISentence.cs" />
-    <Compile Include="IWord.cs" />
-    <Compile Include="Parser.cs" />
+    <Compile Include="Delimeters\Delimeters.cs" />
+    <Compile Include="Delimeters\IDelimetersContainer.cs" />
+    <Compile Include="Utils\IEnumerableStringExtensions.cs" />
+    <Compile Include="TextParser\IParser.cs" />
+    <Compile Include="TextItems\IPartOfSentence.cs" />
+    <Compile Include="TextItems\IPunctuation.cs" />
+    <Compile Include="TextItems\ISentence.cs" />
+    <Compile Include="TextItems\IWord.cs" />
+    <Compile Include="Utils\MatchCollectionExtensions.cs" />
+    <Compile Include="TextParser\Parser.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Punctuation.cs" />
-    <Compile Include="Sentence.cs" />
-    <Compile Include="Symbol.cs" />
+    <Compile Include="TextItems\Punctuation.cs" />
+    <Compile Include="TextItems\Sentence.cs" />
+    <Compile Include="Symbol\Symbol.cs" />
     <Compile Include="Text.cs" />
-    <Compile Include="Word.cs" />
+    <Compile Include="TextItems\Word.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
