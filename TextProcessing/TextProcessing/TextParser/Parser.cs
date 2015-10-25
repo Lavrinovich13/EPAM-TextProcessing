@@ -11,24 +11,32 @@ namespace TextProcessing
     {
         protected IDelimetersContainer _DelimetersContainer;
 
+        protected string _UniqSentencesDelimeters;
+        protected string _UniqWordsDelimeters;
+        protected string _UniqDelimeters;
+        protected IEnumerable<string> _DelimetersCollection;
+
+        protected Regex _WordRegex;
+        protected Regex _SentenceRegex;
+
         public Parser(IDelimetersContainer delimetersConteiner)
         {
             this._DelimetersContainer = delimetersConteiner;
+
+            _UniqSentencesDelimeters = _DelimetersContainer.SentenceDelimeters.ToStringWithoutRepetitions();
+            _UniqWordsDelimeters = _DelimetersContainer.WordDelimeters.ToStringWithoutRepetitions();
+            _UniqDelimeters = String.Concat(_UniqWordsDelimeters, _UniqSentencesDelimeters);
+
+            _DelimetersCollection = _DelimetersContainer.SentenceDelimeters.Concat(_DelimetersContainer.WordDelimeters);
+
+            _WordRegex = new Regex(String.Format(@"\s*([{0}]*)([\w]+)([{0}]*)\s*", _UniqDelimeters), RegexOptions.Compiled);
+            _SentenceRegex = new Regex(String.Format(@"([\W]*.*?[{0}])\s+|$", _UniqSentencesDelimeters), RegexOptions.Compiled);
         }
 
         protected ICollection<IPartOfSentence> ParseSentence(string sentence)
         {
-            string delimeters = String.Concat(_DelimetersContainer.WordDelimeters.ToStringWithoutRepetitions(),
-                                _DelimetersContainer.SentenceDelimeters.ToStringWithoutRepetitions());
-
-            var delimetersArray = _DelimetersContainer.SentenceDelimeters.Concat(_DelimetersContainer.WordDelimeters);
-
-            string pattern = String.Format(@"\s*([{0}]*)([\w]+)([{0}]*)\s*", delimeters);
-
-            Regex regex = new Regex(pattern, RegexOptions.Compiled);
-            var matches = regex.Matches(sentence).AsEnumerable(3);
-            
-            List<IPartOfSentence> partsOfSentences = new List<IPartOfSentence>();
+            var matches = _WordRegex.Matches(sentence).AsEnumerable(3);
+            var partsOfSentences = new List<IPartOfSentence>();
 
             foreach (var item in matches)
             {
@@ -38,11 +46,11 @@ namespace TextProcessing
                     continue;
                 }
 
-                if (!delimetersArray.Contains(item))
+                if (!_DelimetersCollection.Contains(item))
                 {
-                    var componentPunctuation = 
-                        item.ToCharArray().Select(x => x.ToString()).ConcatBy(x => delimetersArray.Contains(x));
-                    foreach(var subitem in componentPunctuation)
+                    var componentPunctuation =
+                    item.ToCharArray().Select(x => x.ToString()).ConcatBy(x => _DelimetersCollection.Contains(x));
+                    foreach (var subitem in componentPunctuation)
                     {
                         partsOfSentences.Add(new Punctuation(subitem));
                     }
@@ -54,15 +62,9 @@ namespace TextProcessing
         }
         protected ICollection<ISentence> ParseText(string text)
         {
-            //TODO catch exceptions
-            string delimeters = _DelimetersContainer.SentenceDelimeters.ToStringWithoutRepetitions();
-            string pattern = String.Format(@"([\W]*.*?[{0}])\s+|$", delimeters);
-
-            Regex regex = new Regex(pattern, RegexOptions.Compiled);
-            //TODO change condition
             Func<string, bool> concatCondition = x => Char.IsLower(x.FirstOrDefault(y => Char.IsLetter(y)));
 
-            var sentences = regex.Matches(text).AsEnumerable(1).ConcatBy(concatCondition);
+            var sentences = _SentenceRegex.Matches(text).AsEnumerable(1).ConcatBy(concatCondition);
             var parseSentences = new List<ISentence>();
 
             foreach(var item in sentences)
