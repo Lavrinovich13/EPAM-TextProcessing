@@ -8,7 +8,9 @@ namespace TextProcessing
 {
     interface IDelimetersContainer
     {
-        IEnumerable<string> SentenceDelimeters { get; }
-        IEnumerable<string> WordDelimeters { get; }
+        Delimeter _SpaceDelimeter { get; }
+        Delimeter[] _SentencesDelimeters { get;  }
+        Delimeter[] _WordsDelimeters { get;  }
+        Delimeter[] _WordsConnectionDelimeters { get;  }
     }
 }
