@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace TextProcessing
 {
-    class Parser : IParser<Text, string>
+    class Parser : IParser<Text, StreamReader>
     {
         protected IDelimetersContainer _DelimetersContainer;
 
@@ -16,7 +17,7 @@ namespace TextProcessing
         protected string _UniqDelimeters;
         protected IEnumerable<string> _DelimetersCollection;
 
-        protected Regex _WordRegex;
+        protected Regex _SentencePartsRegex;
         protected Regex _SentenceRegex;
 
         public Parser(IDelimetersContainer delimetersConteiner)
@@ -29,54 +30,90 @@ namespace TextProcessing
 
             _DelimetersCollection = _DelimetersContainer.SentenceDelimeters.Concat(_DelimetersContainer.WordDelimeters);
 
-            _WordRegex = new Regex(String.Format(@"\s*([{0}]*)([\w]+)([{0}]*)\s*", _UniqDelimeters), RegexOptions.Compiled);
-            _SentenceRegex = new Regex(String.Format(@"([\W]*.*?[{0}])\s+|$", _UniqSentencesDelimeters), RegexOptions.Compiled);
+            _SentencePartsRegex = new Regex(String.Format(@"\s*([{0}]*)\s*([\w]+[\-]?[\w]+|[\w]+)\s*([{0}]*)\s*", _UniqDelimeters), RegexOptions.Compiled);
+            _SentenceRegex = new Regex(String.Format(@"((.*?[{0}])\s+|\t+)(?=[\W]*[A-Z]|[А-Я])", _UniqSentencesDelimeters), RegexOptions.Compiled);
         }
 
         protected ICollection<IPartOfSentence> ParseSentence(string sentence)
         {
-            var matches = _WordRegex.Matches(sentence).AsEnumerable(3);
+            var matches = _SentencePartsRegex.Matches(sentence).AsEnumerable(3);
             var partsOfSentences = new List<IPartOfSentence>();
 
-            foreach (var item in matches)
+            foreach (var match in matches)
             {
-                if(Regex.IsMatch(item, @"[\w]+"))
+                if (Regex.IsMatch(match, @"[\w|\d].*"))
                 {
-                    partsOfSentences.Add(new Word(item));
+                    partsOfSentences.Add(new Word(match));
                     continue;
                 }
 
-                if (!_DelimetersCollection.Contains(item))
+                if (!_DelimetersCollection.Contains(match))
                 {
                     var componentPunctuation =
-                    item.ToCharArray().Select(x => x.ToString()).ConcatBy(x => _DelimetersCollection.Contains(x));
+                    match.ToCharArray().Select(x => x.ToString()).ConcatBy(x => _DelimetersCollection.Contains(x));
                     foreach (var subitem in componentPunctuation)
                     {
                         partsOfSentences.Add(new Punctuation(subitem));
                     }
                 }
-                partsOfSentences.Add(new Punctuation(item));
+                partsOfSentences.Add(new Punctuation(match));
             }
 
             return partsOfSentences;
         }
         protected ICollection<ISentence> ParseText(string text)
         {
-            Func<string, bool> concatCondition = x => Char.IsLower(x.FirstOrDefault(y => Char.IsLetter(y)));
-
-            var sentences = _SentenceRegex.Matches(text).AsEnumerable(1).ConcatBy(concatCondition);
+            var sentences = _SentenceRegex.Matches(text);
             var parseSentences = new List<ISentence>();
 
-            foreach(var item in sentences)
+            var senten = new List<string>();
+
+            foreach (Match item in sentences)
             {
-                parseSentences.Add(new Sentence(ParseSentence(item)));
+                senten.Add(item.Groups[1].Value);
+                parseSentences.Add(new Sentence(ParseSentence(item.Value)));
             }
 
             return parseSentences;
         }
-        public Text Parse(string text)
+
+        protected int NumReadLines = 4;
+
+        public Text Parse(StreamReader stream)
         {
-            var sentences = ParseText(text);
+            int linesCounter = 0;
+            string buffer = "";
+            string currentLine;
+            StringBuilder text = new StringBuilder();
+            List<ISentence> sentences = new List<ISentence>();
+
+            using (stream)
+            {
+                while ((currentLine = stream.ReadLine()) != null)
+                {
+                    linesCounter++;
+                    if (linesCounter != NumReadLines)
+                    {
+                        text.Append(currentLine + " ");
+                    }
+                    else
+                    {
+                        linesCounter = 0;
+                        if (!_UniqSentencesDelimeters.Contains(currentLine.Last()))
+                        {
+                            int lastIndex = currentLine.LastIndexOfAny(_UniqSentencesDelimeters.ToCharArray()) + 1;
+                            buffer = currentLine.Substring(lastIndex);
+                        }
+                        text.Append(currentLine);
+                        sentences.AddRange(ParseText(text.ToString()));
+
+                        text = new StringBuilder();
+                        text.Append(buffer + " ");
+                    }
+                }
+            }
+
+            sentences.Concat(ParseText(text.ToString()));
             return new Text(sentences);
         }
     }

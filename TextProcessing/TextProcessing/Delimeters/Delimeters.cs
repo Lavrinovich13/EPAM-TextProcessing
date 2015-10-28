@@ -9,7 +9,7 @@ namespace TextProcessing
     class Delimeters : IDelimetersContainer
     {
         private string[] _SentenceDelimeters = { ".", "!", "?", "...", "?!" };
-        private string[] _WordDelimeters = { ",", "(", ")", ":", ";", "'", "\"" };
+        private string[] _WordDelimeters = { ",", "(", ")", ":", ";", "'", "\"" , "-"};
 
         public IEnumerable<string> SentenceDelimeters { get { return _SentenceDelimeters.AsEnumerable(); } }
         public IEnumerable<string> WordDelimeters { get { return _WordDelimeters.AsEnumerable(); } }
