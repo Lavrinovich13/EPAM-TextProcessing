@@ -14,75 +14,95 @@ namespace TextProcessing
 
         protected string _UniqSentencesDelimeters;
         protected string _UniqWordsDelimeters;
-        protected string _UniqDelimeters;
+        protected string _SpaceDelimeter;
+        protected string _ConnectionDelimeters;
+        protected string _UniqTextDelimeters;
         protected IEnumerable<string> _DelimetersCollection;
 
         protected Regex _SentencePartsRegex;
         protected Regex _SentenceRegex;
 
+        protected int NumReadLines = 4;
+
         public Parser(IDelimetersContainer delimetersConteiner)
         {
             this._DelimetersContainer = delimetersConteiner;
 
-            _UniqSentencesDelimeters = _DelimetersContainer.SentenceDelimeters.ToStringWithoutRepetitions();
-            _UniqWordsDelimeters = _DelimetersContainer.WordDelimeters.ToStringWithoutRepetitions();
-            _UniqDelimeters = String.Concat(_UniqWordsDelimeters, _UniqSentencesDelimeters);
+            _SpaceDelimeter = _DelimetersContainer._SpaceDelimeter._StringValue;
 
-            _DelimetersCollection = _DelimetersContainer.SentenceDelimeters.Concat(_DelimetersContainer.WordDelimeters);
+            _UniqSentencesDelimeters = 
+                _DelimetersContainer
+                ._SentencesDelimeters
+                .Select(x => x._StringValue)
+                .ToStringWithoutCharRepetitions();
 
-            _SentencePartsRegex = new Regex(String.Format(@"\s*([{0}]*)\s*([\w]+[\-]?[\w]+|[\w]+)\s*([{0}]*)\s*", _UniqDelimeters), RegexOptions.Compiled);
-            _SentenceRegex = new Regex(String.Format(@"((.*?[{0}])\s+|\t+)(?=[\W]*[A-Z]|[А-Я])", _UniqSentencesDelimeters), RegexOptions.Compiled);
+            _UniqWordsDelimeters =
+                _DelimetersContainer
+                ._WordsDelimeters
+                .Select(x => x._StringValue)
+                .ToStringWithoutCharRepetitions();
+
+            _ConnectionDelimeters =
+                _DelimetersContainer
+                ._WordsConnectionDelimeters
+                .Select(x => x._StringValue)
+                .ToStringWithoutCharRepetitions();
+
+            _UniqTextDelimeters = String.Concat(_UniqWordsDelimeters, _UniqSentencesDelimeters);
+
+            _DelimetersCollection = 
+                _DelimetersContainer
+                ._SentencesDelimeters
+                .Select(x => x._StringValue)
+                .Concat(_DelimetersContainer._WordsDelimeters.Select(x => x._StringValue));
+
+            _SentencePartsRegex = 
+                new Regex(String.Format(@"{2}*([{0}]*){2}*([\w]+[{1}]?[\w]+|[\w]+){2}*([{0}]*){2}*",
+                    _UniqTextDelimeters, _ConnectionDelimeters, _SpaceDelimeter), RegexOptions.Compiled);
+
+            _SentenceRegex = 
+                new Regex(String.Format(@"((?<=.*?[{0}]){1}+|\t+)(?=[\W]*[A-Z]|[А-Я])",
+                    _UniqSentencesDelimeters, _SpaceDelimeter), RegexOptions.Compiled);
         }
 
-        protected ICollection<IPartOfSentence> ParseSentence(string sentence)
+        protected IEnumerable<ISentence> ParseSentences(string[] sentences)
         {
-            var matches = _SentencePartsRegex.Matches(sentence).AsEnumerable(3);
-            var partsOfSentences = new List<IPartOfSentence>();
-
-            foreach (var match in matches)
+            var parsedSentences = new List<ISentence>();
+            foreach (var sentence in sentences.Where(x => !String.IsNullOrWhiteSpace(x)))
             {
-                if (Regex.IsMatch(match, @"[\w|\d].*"))
-                {
-                    partsOfSentences.Add(new Word(match));
-                    continue;
-                }
+                var matches = _SentencePartsRegex.Matches(sentence).GetMatchGroupsValues(3);
+                var partsOfSentences = new List<IPartOfSentence>();
 
-                if (!_DelimetersCollection.Contains(match))
+                foreach (var match in matches)
                 {
-                    var componentPunctuation =
-                    match.ToCharArray().Select(x => x.ToString()).ConcatBy(x => _DelimetersCollection.Contains(x));
-                    foreach (var subitem in componentPunctuation)
+                    if (Regex.IsMatch(match, @"[\w|\d].*"))
                     {
-                        partsOfSentences.Add(new Punctuation(subitem));
+                        partsOfSentences.Add(new Word(match));
+                        continue;
                     }
+
+                    if (!_DelimetersCollection.Contains(match))
+                    {
+                        var componentPunctuation =
+                        match.ToCharArray()
+                        .Select(x => x.ToString()).SerialConcatBy(x => _DelimetersCollection.Contains(x));
+                        foreach (var subitem in componentPunctuation)
+                        {
+                            partsOfSentences.Add(new Punctuation(subitem));
+                        }
+                    }
+                    partsOfSentences.Add(new Punctuation(match));
                 }
-                partsOfSentences.Add(new Punctuation(match));
+
+                parsedSentences.Add(new Sentence(partsOfSentences));
             }
-
-            return partsOfSentences;
+            return parsedSentences;
         }
-        protected ICollection<ISentence> ParseText(string text)
-        {
-            var sentences = _SentenceRegex.Matches(text);
-            var parseSentences = new List<ISentence>();
-
-            var senten = new List<string>();
-
-            foreach (Match item in sentences)
-            {
-                senten.Add(item.Groups[1].Value);
-                parseSentences.Add(new Sentence(ParseSentence(item.Value)));
-            }
-
-            return parseSentences;
-        }
-
-        protected int NumReadLines = 4;
 
         public Text Parse(StreamReader stream)
         {
             int linesCounter = 0;
-            string buffer = "";
+            string buffer = String.Empty;
             string currentLine;
             StringBuilder text = new StringBuilder();
             List<ISentence> sentences = new List<ISentence>();
@@ -91,29 +111,39 @@ namespace TextProcessing
             {
                 while ((currentLine = stream.ReadLine()) != null)
                 {
+                    text.Append(currentLine + _SpaceDelimeter);
                     linesCounter++;
-                    if (linesCounter != NumReadLines)
-                    {
-                        text.Append(currentLine + " ");
-                    }
-                    else
+
+                    if (linesCounter == NumReadLines)
                     {
                         linesCounter = 0;
-                        if (!_UniqSentencesDelimeters.Contains(currentLine.Last()))
-                        {
-                            int lastIndex = currentLine.LastIndexOfAny(_UniqSentencesDelimeters.ToCharArray()) + 1;
-                            buffer = currentLine.Substring(lastIndex);
-                        }
-                        text.Append(currentLine);
-                        sentences.AddRange(ParseText(text.ToString()));
+                        var splitSentences = _SentenceRegex.Split(text.ToString());
+                        
+                        splitSentences[0].Insert(0, buffer + _SpaceDelimeter);
 
-                        text = new StringBuilder();
-                        text.Append(buffer + " ");
+                        if (!_UniqSentencesDelimeters.Contains(splitSentences.Last().Trim().Last()))
+                        {
+                            buffer = splitSentences.Last();
+                            splitSentences[splitSentences.Length - 1] = String.Empty;
+                        }
+                       foreach(string s in splitSentences)
+                       {
+                           Console.WriteLine(s);
+                       }
+                        text.Clear();
+                        sentences.AddRange(ParseSentences(splitSentences));
+                        Console.WriteLine(sentences.Count());
                     }
                 }
             }
-
-            sentences.Concat(ParseText(text.ToString()));
+            var splitSentencess = _SentenceRegex.Split(text.ToString());
+            splitSentencess[0].Insert(0, buffer + _SpaceDelimeter);
+            sentences.AddRange(ParseSentences(splitSentencess));
+            foreach (string s in splitSentencess)
+            {
+                Console.WriteLine(s);
+            }
+            Console.WriteLine(sentences.Count());
             return new Text(sentences);
         }
     }
