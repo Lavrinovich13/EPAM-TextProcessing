@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 
 namespace TextProcessing
 {
-    interface IWord : IPartOfSentence
+    interface IWord : IPartOfSentence, IEquatable<IWord>
     {
         Symbol[] _Value { get; }
+        int Length { get; }
+        bool IsStartsWith(Func<Symbol, bool> predicate);
     }
 }
