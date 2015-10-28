@@ -41,8 +41,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Delimeters\Delimeters.cs" />
+    <Compile Include="Delimeters\DefaultDelimeters.cs" />
+    <Compile Include="Delimeters\Delimeter.cs" />
     <Compile Include="Delimeters\IDelimetersContainer.cs" />
+    <Compile Include="TextItems\SentenceTypes.cs" />
     <Compile Include="Utils\IEnumerableStringExtensions.cs" />
     <Compile Include="TextParser\IParser.cs" />
     <Compile Include="TextItems\IPartOfSentence.cs" />
@@ -61,6 +63,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="ClassDiagram1.cd" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
