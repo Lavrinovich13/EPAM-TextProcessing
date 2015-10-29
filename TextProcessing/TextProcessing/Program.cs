@@ -13,7 +13,10 @@ namespace TextProcessing
         static void Main(string[] args)
         {
             IDelimetersContainer defaultDelimeters = new DefaultDelimeters();
-            Parser textParser = new Parser(defaultDelimeters);
+            IFactory<IPartOfSentence, string> partsOfSentenceFactory
+                = new PartsOfSentenceFactory(defaultDelimeters);
+
+            Parser textParser = new Parser(defaultDelimeters, partsOfSentenceFactory);
 
             StreamReader reader = new StreamReader("text1.txt");
             Text text = textParser.Parse(reader);
