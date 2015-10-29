@@ -8,7 +8,7 @@ namespace TextProcessing
 {
     class Sentence : ISentence
     {
-        private ICollection<IPartOfSentence> _Items;
+        public IEnumerable<IPartOfSentence> _Items { get; private set; }
 
         public SentenceTypes _SentenceType
         {
@@ -20,14 +20,14 @@ namespace TextProcessing
             _Items = new List<IPartOfSentence>();
         }
 
-        public Sentence(ICollection<IPartOfSentence> items)
+        public Sentence(IEnumerable<IPartOfSentence> items)
         {
             _Items = items;
         }
 
-        public int GetNumberOf(Type type)
+        public int GetNumberOfWords()
         {
-            return _Items.Where(x => x.GetType() == type).Count();
+            return _Items.Where(x => x is IWord).Count();
         }
 
         public IEnumerable<IWord> GetWordsBy(Func<IWord, bool> predicate)
@@ -44,5 +44,10 @@ namespace TextProcessing
             return _Items.Where(x => x is IWord).Cast<IWord>().Where(x => !predicate(x)).AsEnumerable();
         }
 
+        public IEnumerable<IWord> ReplaceWordsBy
+            (Func<IWord, bool> predicate, string replaceString, IFactory<string, IPartOfSentence> parser)
+        {
+            return new List<IWord>();
+        }
     }
 }
