@@ -9,8 +9,8 @@ namespace TextProcessing
     interface IDelimetersContainer
     {
         Delimeter _SpaceDelimeter { get; }
-        Delimeter[] _SentencesDelimeters { get;  }
-        Delimeter[] _WordsDelimeters { get;  }
-        Delimeter[] _WordsConnectionDelimeters { get;  }
+        Delimeter[] _SentencesDelimeters { get; }
+        Delimeter[] _WordsDelimeters { get; }
+        Delimeter[] _WordsConnectionDelimeters { get; }
     }
 }
