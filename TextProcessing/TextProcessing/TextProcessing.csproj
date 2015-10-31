@@ -41,23 +41,26 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Delimeters\DefaultDelimeters.cs" />
-    <Compile Include="Delimeters\Delimeter.cs" />
-    <Compile Include="Delimeters\IDelimetersContainer.cs" />
+    <Compile Include="DelimetersContainer\DefaultDelimeters.cs" />
+    <Compile Include="TextWriter\IWriter.cs" />
+    <Compile Include="TextWriter\TextStreamWriter.cs" />
+    <Compile Include="TextItems\Delimeter.cs" />
+    <Compile Include="DelimetersContainer\IDelimetersContainer.cs" />
+    <Compile Include="TextItemsFactories\IFactory.cs" />
+    <Compile Include="TextItemsFactories\PartsOfSentenceFactory.cs" />
+    <Compile Include="TextItems\DelimeterTypes.cs" />
     <Compile Include="TextItems\SentenceTypes.cs" />
     <Compile Include="Utils\IEnumerableStringExtensions.cs" />
     <Compile Include="TextParser\IParser.cs" />
-    <Compile Include="TextItems\IPartOfSentence.cs" />
-    <Compile Include="TextItems\IPunctuation.cs" />
-    <Compile Include="TextItems\ISentence.cs" />
-    <Compile Include="TextItems\IWord.cs" />
+    <Compile Include="TextItemsInterfaces\IPartOfSentence.cs" />
+    <Compile Include="TextItemsInterfaces\IDelimeter.cs" />
+    <Compile Include="TextItemsInterfaces\ISentence.cs" />
+    <Compile Include="TextItemsInterfaces\IWord.cs" />
     <Compile Include="Utils\MatchCollectionExtensions.cs" />
     <Compile Include="TextParser\Parser.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TextItems\Punctuation.cs" />
     <Compile Include="TextItems\Sentence.cs" />
-    <Compile Include="Symbol\Symbol.cs" />
     <Compile Include="Text.cs" />
     <Compile Include="TextItems\Word.cs" />
   </ItemGroup>
