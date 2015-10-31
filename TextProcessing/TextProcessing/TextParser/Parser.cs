@@ -11,7 +11,7 @@ namespace TextProcessing
     class Parser : IParser<Text, StreamReader>
     {
         protected IDelimetersContainer _DelimetersContainer;
-        protected IFactory<IPartOfSentence, string> _PartsOfSentenceFactory;
+        protected IFactory<string, IPartOfSentence> _PartsOfSentenceFactory;
 
         protected string _UniqSentencesDelimeters;
         protected string _SpaceDelimeter;
@@ -20,7 +20,7 @@ namespace TextProcessing
 
         protected int NumReadLines = 4;
 
-        public Parser(IDelimetersContainer delimetersConteiner, IFactory<IPartOfSentence, string> factory)
+        public Parser(IDelimetersContainer delimetersConteiner, IFactory<string, IPartOfSentence> factory)
         {
             this._DelimetersContainer = delimetersConteiner;
             this._PartsOfSentenceFactory = factory;
@@ -29,7 +29,7 @@ namespace TextProcessing
 
             _UniqSentencesDelimeters = _DelimetersContainer._SentencesDelimeters
                 .Select(x => x._StringValue)
-                .ToStringWithoutCharRepetitions();
+                .ToRegexStringWithoutRepetitions();
 
             _SentenceRegex = 
                 new Regex(String.Format(@"((?<=.*?[{0}]){1}+|\t+)(?=[\W]*[A-Z]|[А-Я])",
@@ -75,7 +75,6 @@ namespace TextProcessing
                         }
                         text.Clear();
                         sentences.AddRange(ParseSentences(splitSentences));
-                        Console.WriteLine(sentences.Count());
                     }
                 }
             }
