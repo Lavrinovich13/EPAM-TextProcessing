@@ -11,6 +11,7 @@ namespace TextProcessing
     {
         public static IEnumerable<string> GetMatchGroupsValues(this MatchCollection collection, int numGroups)
         {
+            var values = new List<string>();
             foreach (Match item in collection)
             {
                 for (int i = 1; i <= numGroups; i++)
@@ -18,10 +19,11 @@ namespace TextProcessing
                     var value = item.Groups[i].ToString();
                     if (!String.IsNullOrWhiteSpace(value))
                     {
-                        yield return value;
+                        values.Add(value);
                     }
                 }
             }
+            return values;
         }
     }
 }

@@ -8,37 +8,38 @@ namespace TextProcessing
 {
     public static class IEnumerableStringExtensions
     {
-        public static string ToStringWithoutCharRepetitions(this IEnumerable<string> collection)
+        public static string ToRegexStringWithoutRepetitions(this IEnumerable<string> collection)
         {
             var stringWithoutRepetitions =
                             collection.SerialConcatBy(x => true, null)
                                       .ElementAt(0).Distinct()
-                                      .Select(x => x.ToString())
+                                      .Select(x => "\\" + (x.ToString()))
                                       .SerialConcatBy(x => true,null)
                                       .ElementAt(0);
             return stringWithoutRepetitions;
         }
-        public static IEnumerable<string> SerialConcatBy(this IEnumerable<string> collection, Func<string, bool> function, string concatString = " ")
+        public static IEnumerable<string> SerialConcatBy
+            (this IEnumerable<string> collection, Func<string, bool> function, string concatString = " ")
         {
-            var sentences = new List<string>();
-            string lastSentence = null;
+            var parts = new List<string>();
+            string lastPart = null;
             foreach (var item in collection)
             {
                 if (function(item))
                 {
-                    lastSentence += concatString + item;
+                    lastPart += concatString + item;
                 }
                 else
                 {
-                    if (lastSentence != null)
+                    if (lastPart != null)
                     {
-                        sentences.Add(lastSentence);
+                        parts.Add(lastPart);
                     }
-                    lastSentence = item;
+                    lastPart = item;
                 }
             }
-            sentences.Add(lastSentence);
-            return sentences.Where(x => !String.IsNullOrEmpty(x)).ToList();
+            parts.Add(lastPart);
+            return parts.Where(x => !String.IsNullOrEmpty(x)).ToList();
         }
     }
 }
