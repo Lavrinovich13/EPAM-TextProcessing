@@ -13,14 +13,18 @@ namespace TextProcessing
         static void Main(string[] args)
         {
             IDelimetersContainer defaultDelimeters = new DefaultDelimeters();
-            IFactory<IPartOfSentence, string> partsOfSentenceFactory
+
+            IFactory<string, IPartOfSentence> partsOfSentenceFactory
                 = new PartsOfSentenceFactory(defaultDelimeters);
 
             Parser textParser = new Parser(defaultDelimeters, partsOfSentenceFactory);
 
-            StreamReader reader = new StreamReader("text1.txt");
-            Text text = textParser.Parse(reader);
+            Text text = textParser.Parse(new StreamReader("text1.txt"));
 
+            var sortedSentences = text.GetSentences().OrderBy(x => x.GetNumberOfWords());
+            
+            TextStreamWriter textWriter = new TextStreamWriter();
+            textWriter.Write(new StreamWriter("result1.txt"), new Text(sortedSentences.ToList()));
         }
     }
 }
