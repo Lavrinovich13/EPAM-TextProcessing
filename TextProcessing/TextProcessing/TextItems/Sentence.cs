@@ -10,9 +10,9 @@ namespace TextProcessing
     {
         public IEnumerable<IPartOfSentence> _Items { get; private set; }
 
-        public SentenceTypes _SentenceType
+        public SentenceTypes _Type
         {
-            get { return SentenceTypes.Declarative; }
+            get { return (_Items.Last() as IDelimeter)._SentenceType; }
         }
 
         public Sentence()
@@ -24,10 +24,11 @@ namespace TextProcessing
         {
             _Items = items;
         }
-
         public int GetNumberOfWords()
         {
-            return _Items.Where(x => x is IWord).Count();
+            return _Items
+                .Where(x => x is IWord)
+                .Count();
         }
 
         public IEnumerable<IWord> GetWordsBy(Func<IWord, bool> predicate)
@@ -35,19 +36,37 @@ namespace TextProcessing
             return _Items.Where(x => x is IWord)
                 .Cast<IWord>()
                 .Where(x => predicate(x))
-                .Distinct()
                 .AsEnumerable();
         }
 
-        public IEnumerable<IWord> RemoveWordsBy(Func<IWord, bool> predicate)
+        public IEnumerable<IPartOfSentence> RemoveWordsBy(Func<IWord, bool> predicate)
         {
-            return _Items.Where(x => x is IWord).Cast<IWord>().Where(x => !predicate(x)).AsEnumerable();
+            return _Items
+                .Where(x => !(x is IWord && predicate(x as IWord)))
+                .AsEnumerable();
         }
 
-        public IEnumerable<IWord> ReplaceWordsBy
+        public IEnumerable<IPartOfSentence> ReplaceWordsBy
             (Func<IWord, bool> predicate, string replaceString, IFactory<string, IPartOfSentence> parser)
         {
-            return new List<IWord>();
+            var newParts = parser.Build(replaceString);
+
+            var newSentence = new List<IPartOfSentence>();
+
+            foreach(var part in _Items)
+            {
+                if (part is IWord)
+                {
+                    if (predicate(part as IWord))
+                    {
+                        newSentence.AddRange(newParts);
+                        continue;
+                    }
+                }
+               newSentence.Add(part);
+            }
+
+            return newSentence.AsEnumerable();
         }
     }
 }

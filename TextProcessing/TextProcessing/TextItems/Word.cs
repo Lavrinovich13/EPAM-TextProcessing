@@ -8,38 +8,24 @@ namespace TextProcessing
 {
     class Word : IWord
     {
-        public Symbol[] _Value { get; private set; }
-
-        public Word(Symbol[] word)
-        {
-            _Value = word;
-        }
+        public string _StringValue { get; private set; }
         public Word(string word)
         {
-            _Value = word.ToCharArray().Select(x => new Symbol(x)).ToArray();
-        }
-
-        public string GetString()
-        {
-            throw new NotImplementedException();
+            _StringValue = word;
         }
 
         public int Length
         {
             get
             {
-                return _Value.Length;
+                return _StringValue.Length;
             }
         }
 
-        public bool IsStartsWith(Func<Symbol,bool> predicate)
+        public bool IsStartsWithVowel()
         {
-            return _Value.Length == 1 ? predicate(_Value[0]) : false;
-        }
-
-        public bool Equals(IWord other)
-        {
-            return this._Value.SequenceEqual(this._Value);
+            char[] VowelsArray = new char[] { 'a', 'o', 'e', 'y', 'u', 'i' };
+            return VowelsArray.Contains(_StringValue[0]) ? true : false;
         }
     }
 }
