@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace TextProcessing
 {
-    interface IFactory<T, K>
+    interface IPartOfSentence
     {
-        IEnumerable<K> Build(T input);
+        string _StringValue { get; }
     }
 }
