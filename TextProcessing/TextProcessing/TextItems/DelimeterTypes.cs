@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace TextProcessing
 {
-        enum DelimeterTypes
-        {
-            Single,
-            Double,
-            FirstInPair,
-            LastInPair
-        }
+    public enum DelimeterTypes
+    {
+        Single,
+        Double,
+        FirstInPair,
+        LastInPair
+    }
 }

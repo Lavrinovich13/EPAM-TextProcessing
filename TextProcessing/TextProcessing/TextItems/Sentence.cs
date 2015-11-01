@@ -6,54 +6,55 @@ using System.Threading.Tasks;
 
 namespace TextProcessing
 {
-    class Sentence : ISentence
+    public class Sentence : ISentence
     {
-        public IEnumerable<IPartOfSentence> _Items { get; private set; }
+        public IEnumerable<IPartOfSentence> Items { get; private set; }
 
-        public SentenceTypes _Type
+        public SentenceTypes Type
         {
-            get { return (_Items.Last() as IDelimeter)._SentenceType; }
+            get { return (Items.Last() as IDelimeter).SentenceType; }
         }
 
         public Sentence()
         {
-            _Items = new List<IPartOfSentence>();
+            Items = new List<IPartOfSentence>();
         }
 
         public Sentence(IEnumerable<IPartOfSentence> items)
         {
-            _Items = items;
+            this.Items = items;
         }
+
         public int GetNumberOfWords()
         {
-            return _Items
+            return Items
                 .Where(x => x is IWord)
                 .Count();
         }
 
         public IEnumerable<IWord> GetWordsBy(Func<IWord, bool> predicate)
         {
-            return _Items.Where(x => x is IWord)
+            return Items.Where(x => x is IWord)
                 .Cast<IWord>()
                 .Where(x => predicate(x))
                 .AsEnumerable();
         }
 
-        public IEnumerable<IPartOfSentence> RemoveWordsBy(Func<IWord, bool> predicate)
+        public void RemoveWordsBy(Func<IWord, bool> predicate)
         {
-            return _Items
-                .Where(x => !(x is IWord && predicate(x as IWord)))
-                .AsEnumerable();
+            Items = Items
+               .Where(x => !(x is IWord && predicate(x as IWord)))
+               .AsEnumerable();
         }
 
-        public IEnumerable<IPartOfSentence> ReplaceWordsBy
-            (Func<IWord, bool> predicate, string replaceString, IFactory<string, IPartOfSentence> parser)
+        public void ReplaceWordsBy
+            (Func<IWord, bool> predicate, string replaceString, IFactory<string, IEnumerable<IPartOfSentence>> parser)
         {
-            var newParts = parser.Build(replaceString);
+            var newParts = parser.Construct(replaceString);
 
             var newSentence = new List<IPartOfSentence>();
 
-            foreach(var part in _Items)
+            foreach (var part in Items)
             {
                 if (part is IWord)
                 {
@@ -63,10 +64,10 @@ namespace TextProcessing
                         continue;
                     }
                 }
-               newSentence.Add(part);
+                newSentence.Add(part);
             }
 
-            return newSentence.AsEnumerable();
+            Items = newSentence.AsEnumerable();
         }
     }
 }

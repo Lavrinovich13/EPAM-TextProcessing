@@ -6,10 +6,11 @@ using System.Threading.Tasks;
 
 namespace TextProcessing
 {
-    interface IDelimeter : IPartOfSentence
+    public interface IDelimeter : IPartOfSentence
     {
-        bool _IsSeparatedBySpace { get; }
-        DelimeterTypes _DelimeterType { get; }
-        SentenceTypes _SentenceType { get; }
+        Symbol CharValue { get; }
+        bool IsSeparatedBySpace { get; }
+        DelimeterTypes DelimeterType { get; }
+        SentenceTypes SentenceType { get; }
     }
 }

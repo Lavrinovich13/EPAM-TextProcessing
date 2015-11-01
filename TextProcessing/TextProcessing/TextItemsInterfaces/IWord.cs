@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace TextProcessing
 {
-    interface IWord : IPartOfSentence
+    public interface IWord : IPartOfSentence
     {
+        Symbol[] CharValue { get; }
         int Length { get; }
         bool IsStartsWithVowel();
     }

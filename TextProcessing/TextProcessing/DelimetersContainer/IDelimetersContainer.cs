@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace TextProcessing
 {
-    interface IDelimetersContainer
+    public interface IDelimetersContainer
     {
-        Delimeter _SpaceDelimeter { get; }
-        Delimeter[] _SentencesDelimeters { get; }
-        Delimeter[] _WordsDelimeters { get; }
-        Delimeter[] _WordsConnectionDelimeters { get; }
-        Delimeter[] GetDelimetersInSentence();
+        Delimeter SpaceDelimeter { get; }
+        Delimeter[] SentencesDelimeters { get; }
+        Delimeter[] WordsDelimeters { get; }
+        Delimeter[] WordsConnectionDelimeters { get; }
+        Delimeter[] GetDelimetersInSentence { get; }
     }
 }

@@ -6,23 +6,21 @@ using System.Threading.Tasks;
 
 namespace TextProcessing
 {
-    class Text
+    public class Text
     {
-        private ICollection<ISentence> _Sentences;
+        private ICollection<ISentence> Sentences;
 
-        public IEnumerable<ISentence> GetSentences()
+        public IEnumerable<ISentence> GetSentences
         {
-            return _Sentences.AsEnumerable();
-        }
-
-        public Text()
-        {
-            _Sentences = new List<ISentence>();
+            get
+            {
+                return Sentences.AsEnumerable();
+            }
         }
 
         public Text(ICollection<ISentence> sentences)
         {
-            _Sentences = sentences;
+            Sentences = sentences;
         }
 
         public IEnumerable<IWord> GetDistinctWordsBy
@@ -30,26 +28,26 @@ namespace TextProcessing
         {
             var words = new List<IWord>();
 
-            foreach (var sentence in _Sentences.Where(x => x._Type == SentenceTypes.Exclamatory))
+            foreach (var sentence in Sentences.Where(x => x.Type == SentenceTypes.Exclamatory))
             {
                 words.AddRange(sentence.GetWordsBy(x => x.Length == 3));
             }
 
-            return words.GroupBy(x => x._StringValue.ToLowerInvariant()).Select(x => x.First());
+            return words.GroupBy(x => x.StringValue.ToLowerInvariant()).Select(x => x.First());
         }
 
         public void RemoveWordsBy(Func<IWord, bool> predicate)
         {
-            _Sentences = _Sentences.Select(x => new Sentence(x.RemoveWordsBy(predicate))).ToList<ISentence>();
+            foreach (var sentence in Sentences)
+            {
+                sentence.RemoveWordsBy(predicate);
+            }
         }
 
         public void ReplaceWordsBy
-            (Func<IWord, bool> predicate, int sentenceIndex, string newString, IFactory<string, IPartOfSentence> partsOfSentenceFactory)
+            (int sentenceIndex, string newString, Func<IWord, bool> predicate, IFactory<string, IEnumerable<IPartOfSentence>> partsOfSentenceFactory)
         {
-            _Sentences.ToList()[sentenceIndex] = 
-                new Sentence(_Sentences
-                    .ElementAt(sentenceIndex)
-                    .ReplaceWordsBy(x => x.Length == 3, newString, partsOfSentenceFactory));
+            Sentences.ElementAt(sentenceIndex).ReplaceWordsBy(predicate, newString, partsOfSentenceFactory);
         }
     }
 }

@@ -6,19 +6,19 @@ using System.Threading.Tasks;
 
 namespace TextProcessing
 {
-    class DefaultDelimeters : IDelimetersContainer
+    public class DefaultDelimeters : IDelimetersContainer
     {
-        public Delimeter _SpaceDelimeter { get; private set; }
-        public Delimeter[] _SentencesDelimeters { get; private set; }
-        public Delimeter[] _WordsDelimeters { get; private set; }
-        public Delimeter[] _WordsConnectionDelimeters { get; private set; }
+        public Delimeter SpaceDelimeter { get; private set; }
+        public Delimeter[] SentencesDelimeters { get; private set; }
+        public Delimeter[] WordsDelimeters { get; private set; }
+        public Delimeter[] WordsConnectionDelimeters { get; private set; }
         
 
         public DefaultDelimeters()
         {
-            _SpaceDelimeter = new Delimeter(" ", false, DelimeterTypes.Single);
+            SpaceDelimeter = new Delimeter(" ", false, DelimeterTypes.Single);
 
-            _SentencesDelimeters = new Delimeter[]
+            SentencesDelimeters = new Delimeter[]
             {
                 new Delimeter(".", false, DelimeterTypes.Single, SentenceTypes.Declarative),
                 new Delimeter("!", false, DelimeterTypes.Single, SentenceTypes.Interrogative),
@@ -28,7 +28,7 @@ namespace TextProcessing
                 new Delimeter("!?", false, DelimeterTypes.Single, SentenceTypes.Exclamatory)
             };
 
-            _WordsDelimeters = new Delimeter[] 
+            WordsDelimeters = new Delimeter[] 
             {
                 new Delimeter(",", false, DelimeterTypes.Single),
                 new Delimeter("(", false, DelimeterTypes.FirstInPair),
@@ -44,16 +44,19 @@ namespace TextProcessing
                 new Delimeter("-", true, DelimeterTypes.Single)
             };
 
-            _WordsConnectionDelimeters = new Delimeter[] 
+            WordsConnectionDelimeters = new Delimeter[] 
             {
                 new Delimeter("-", false, DelimeterTypes.Single),
                 new Delimeter("'", false, DelimeterTypes.Single)
             };
         }
 
-        public Delimeter[] GetDelimetersInSentence()
+        public Delimeter[] GetDelimetersInSentence
         {
-            return _SentencesDelimeters.Concat(_WordsDelimeters).ToArray();
+           get
+            {
+                return SentencesDelimeters.Concat(WordsDelimeters).ToArray();
+            }
         }
     }
 }

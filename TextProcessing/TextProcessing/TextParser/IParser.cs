@@ -5,8 +5,8 @@ using System.Text;
 
 namespace TextProcessing
 {
-    interface IParser<T,K>
+    public interface IParser<T,K>
     {
-        T Parse(K input);
+        K Parse(T input);
     }
 }

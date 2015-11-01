@@ -5,8 +5,8 @@ using System.Text;
 
 namespace TextProcessing
 {
-    interface IFactory<T, K>
+    public interface IFactory<T, K>
     {
-        IEnumerable<K> Build(T input);
+        K Construct(T input);
     }
 }

@@ -6,26 +6,34 @@ using System.Threading.Tasks;
 
 namespace TextProcessing
 {
-    class Word : IWord
+    public class Word : IWord
     {
-        public string _StringValue { get; private set; }
+        public Symbol[] CharValue { get; private set; }
+        public string StringValue 
+        {
+            get
+            {
+                return String.Join(String.Empty, CharValue.Select(x => x.GetSymbol).ToArray());
+            }
+        }
         public Word(string word)
         {
-            _StringValue = word;
+            CharValue = word.Select(x => new Symbol(x)).ToArray();
         }
 
         public int Length
         {
             get
             {
-                return _StringValue.Length;
+                return CharValue == null ? 0 : CharValue.Length;
+;
             }
         }
 
         public bool IsStartsWithVowel()
         {
             char[] VowelsArray = new char[] { 'a', 'o', 'e', 'y', 'u', 'i' };
-            return VowelsArray.Contains(_StringValue[0]) ? true : false;
+            return VowelsArray.Contains(StringValue[0]) ? true : false;
         }
     }
 }

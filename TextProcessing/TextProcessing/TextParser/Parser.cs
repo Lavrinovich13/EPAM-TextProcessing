@@ -8,32 +8,30 @@ using System.Threading.Tasks;
 
 namespace TextProcessing
 {
-    class Parser : IParser<Text, StreamReader>
+    public class Parser : IParser<StreamReader, Text>
     {
-        protected IDelimetersContainer _DelimetersContainer;
-        protected IFactory<string, IPartOfSentence> _PartsOfSentenceFactory;
+        protected IDelimetersContainer DelimetersContainer;
+        protected IFactory<string, IEnumerable<IPartOfSentence>> PartsOfSentenceFactory;
 
-        protected string _UniqSentencesDelimeters;
-        protected string _SpaceDelimeter;
+        protected string UniqSentencesDelimeters;
+        protected string SpaceDelimeter;
 
-        protected Regex _SentenceRegex;
+        protected Regex SentenceRegex;
 
-        protected int NumReadLines = 4;
-
-        public Parser(IDelimetersContainer delimetersConteiner, IFactory<string, IPartOfSentence> factory)
+        public Parser(IDelimetersContainer delimetersConteiner, IFactory<string, IEnumerable<IPartOfSentence>> factory)
         {
-            this._DelimetersContainer = delimetersConteiner;
-            this._PartsOfSentenceFactory = factory;
+            this.DelimetersContainer = delimetersConteiner;
+            this.PartsOfSentenceFactory = factory;
 
-            _SpaceDelimeter = _DelimetersContainer._SpaceDelimeter._StringValue;
+            SpaceDelimeter = DelimetersContainer.SpaceDelimeter.StringValue;
 
-            _UniqSentencesDelimeters = _DelimetersContainer._SentencesDelimeters
-                .Select(x => x._StringValue)
+            UniqSentencesDelimeters = DelimetersContainer.SentencesDelimeters
+                .Select(x => x.StringValue)
                 .ToRegexStringWithoutRepetitions();
 
-            _SentenceRegex = 
+            SentenceRegex =
                 new Regex(String.Format(@"((?<=.*?[{0}]){1}+|\t+)(?=[\W]*[A-Z]|[А-Я])",
-                    _UniqSentencesDelimeters, _SpaceDelimeter), RegexOptions.Compiled);
+                    UniqSentencesDelimeters, SpaceDelimeter), RegexOptions.Compiled);
         }
 
         protected IEnumerable<ISentence> ParseSentences(string[] sentences)
@@ -41,14 +39,13 @@ namespace TextProcessing
             var parsedSentences = new List<ISentence>();
             foreach (var sentence in sentences.Where(x => !String.IsNullOrWhiteSpace(x)))
             {
-                parsedSentences.Add(new Sentence(_PartsOfSentenceFactory.Build(sentence)));
+                parsedSentences.Add(new Sentence(PartsOfSentenceFactory.Construct(sentence)));
             }
             return parsedSentences;
         }
 
         public Text Parse(StreamReader stream)
         {
-            int linesCounter = 0;
             string buffer = String.Empty;
             string currentLine;
             StringBuilder text = new StringBuilder();
@@ -58,28 +55,24 @@ namespace TextProcessing
             {
                 while ((currentLine = stream.ReadLine()) != null)
                 {
-                    text.Append(currentLine + _SpaceDelimeter);
-                    linesCounter++;
+                    text.Append(buffer + SpaceDelimeter + currentLine);
 
-                    if (linesCounter == NumReadLines)
+                    var splitSentences = SentenceRegex
+                        .Split(text.ToString())
+                        .Where(x => !String.IsNullOrWhiteSpace(x))
+                        .ToArray();
+
+                    if (splitSentences.Count() != 0 && !UniqSentencesDelimeters.Contains(splitSentences.Last().Trim().Last()))
                     {
-                        linesCounter = 0;
-                        var splitSentences = _SentenceRegex.Split(text.ToString());
-                        
-                        splitSentences[0].Insert(0, buffer + _SpaceDelimeter);
-
-                        if (!_UniqSentencesDelimeters.Contains(splitSentences.Last().Trim().Last()))
-                        {
-                            buffer = splitSentences.Last();
-                            splitSentences[splitSentences.Length - 1] = String.Empty;
-                        }
-                        text.Clear();
-                        sentences.AddRange(ParseSentences(splitSentences));
+                        buffer = splitSentences.Last();
+                        splitSentences[splitSentences.Length - 1] = String.Empty;
                     }
+                    text.Clear();
+                    sentences.AddRange(ParseSentences(splitSentences));
                 }
             }
-            var splitSentencess = _SentenceRegex.Split(text.ToString());
-            splitSentencess[0].Insert(0, buffer + _SpaceDelimeter);
+            var splitSentencess = SentenceRegex.Split(text.ToString());
+            splitSentencess[0].Insert(0, buffer + SpaceDelimeter);
             sentences.AddRange(ParseSentences(splitSentencess));
             return new Text(sentences);
         }

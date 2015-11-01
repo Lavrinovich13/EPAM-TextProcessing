@@ -6,17 +6,19 @@ using System.Threading.Tasks;
 
 namespace TextProcessing
 {
-    interface ISentence
+    public interface ISentence
     {
-        IEnumerable<IPartOfSentence> _Items { get; }
-        SentenceTypes _Type { get; }
+        IEnumerable<IPartOfSentence> Items { get; }
+
+        SentenceTypes Type { get; }
+
         int GetNumberOfWords();
 
         IEnumerable<IWord> GetWordsBy(Func<IWord, bool> predicate);
 
-        IEnumerable<IPartOfSentence> RemoveWordsBy(Func<IWord, bool> predicate);
+        void RemoveWordsBy(Func<IWord, bool> predicate);
 
-        IEnumerable<IPartOfSentence> ReplaceWordsBy
-            (Func<IWord, bool> predicate, string replaceString, IFactory<string, IPartOfSentence> parser);
+        void ReplaceWordsBy
+            (Func<IWord, bool> predicate, string replaceString, IFactory<string, IEnumerable<IPartOfSentence>> parser);
     }
 }

@@ -42,8 +42,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DelimetersContainer\DefaultDelimeters.cs" />
-    <Compile Include="TextWriter\IWriter.cs" />
-    <Compile Include="TextWriter\TextStreamWriter.cs" />
+    <Compile Include="TextItems\Symbol.cs" />
+    <Compile Include="TextWriter\IStreamWriter.cs" />
+    <Compile Include="TextWriter\TextToStreamWriter.cs" />
     <Compile Include="TextItems\Delimeter.cs" />
     <Compile Include="DelimetersContainer\IDelimetersContainer.cs" />
     <Compile Include="TextItemsFactories\IFactory.cs" />

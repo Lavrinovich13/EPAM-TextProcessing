@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TextProcessing
 {
-    enum SentenceTypes
+    public enum SentenceTypes
     {
         Indefinite,
         Interrogative,

@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace TextProcessing
 {
-    interface IPartOfSentence
+    public interface IPartOfSentence
     {
-        string _StringValue { get; }
+        string StringValue { get; }
     }
 }

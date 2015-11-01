@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TextProcessing
 {
-    public static class IEnumerableStringExtensions
+    internal static class IEnumerableStringExtensions
     {
         public static string ToRegexStringWithoutRepetitions(this IEnumerable<string> collection)
         {
@@ -18,7 +18,7 @@ namespace TextProcessing
                                       .ElementAt(0);
             return stringWithoutRepetitions;
         }
-        public static IEnumerable<string> SerialConcatBy
+        internal static IEnumerable<string> SerialConcatBy
             (this IEnumerable<string> collection, Func<string, bool> function, string concatString = " ")
         {
             var parts = new List<string>();

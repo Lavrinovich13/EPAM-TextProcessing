@@ -6,8 +6,8 @@ using System.Text;
 
 namespace TextProcessing
 {
-    interface IWriter
+    public interface IStreamWriter<K>
     {
-        void Write(StreamWriter writer, Text text);
+        void Write(StreamWriter stream, K input);
     }
 }
