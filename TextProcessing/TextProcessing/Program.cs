@@ -46,7 +46,7 @@ namespace TextProcessing
 
                     writer.WriteLine();
 
-                    writer.WriteLine("-> In first sentence replace all words with length 5");
+                    writer.WriteLine("-> In 7th sentence replace all words with length 5");
                     text.ReplaceWordsBy(6, "(it was replaced)", x => x.Length == 5, partsOfSentenceFactory);
                     textWriter.Write(writer, text);
 

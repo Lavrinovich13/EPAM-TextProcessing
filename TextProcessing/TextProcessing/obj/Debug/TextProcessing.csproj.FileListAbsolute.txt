@@ -4,3 +4,9 @@ D:\3 курс проекты\TextProcessing\TextProcessing\bin\Debug\TextProcess
 D:\3 курс проекты\TextProcessing\TextProcessing\bin\Debug\TextProcessing.pdb
 D:\3 курс проекты\TextProcessing\TextProcessing\obj\Debug\TextProcessing.exe
 D:\3 курс проекты\TextProcessing\TextProcessing\obj\Debug\TextProcessing.pdb
+C:\Users\Ksenia\Documents\EPAM-TextProcessing\TextProcessing\TextProcessing\bin\Debug\TextProcessing.exe.config
+C:\Users\Ksenia\Documents\EPAM-TextProcessing\TextProcessing\TextProcessing\obj\Debug\TextProcessing.exe
+C:\Users\Ksenia\Documents\EPAM-TextProcessing\TextProcessing\TextProcessing\obj\Debug\TextProcessing.pdb
+C:\Users\Ksenia\Documents\EPAM-TextProcessing\TextProcessing\TextProcessing\bin\Debug\TextProcessing.exe
+C:\Users\Ksenia\Documents\EPAM-TextProcessing\TextProcessing\TextProcessing\bin\Debug\TextProcessing.pdb
+C:\Users\Ksenia\Documents\EPAM-TextProcessing\TextProcessing\TextProcessing\obj\Debug\TextProcessing.csprojResolveAssemblyReference.cache
