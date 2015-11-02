@@ -19,37 +19,48 @@ namespace TextProcessing
 
             Parser textParser = new Parser(defaultDelimeters, partsOfSentenceFactory);
 
-            Text text = textParser.Parse(new StreamReader("text.txt"));
-
-            TextToStreamWriter textWriter = new TextToStreamWriter();
-            textWriter.SpaceDelimeter = defaultDelimeters.SpaceDelimeter;
-            using (StreamWriter writer = new StreamWriter("result.txt"))
+            try
             {
-                writer.WriteLine("-> Sorted sentences");
-                var sortedSentences = text.GetSentences.OrderBy(x => x.GetNumberOfWords()).AsEnumerable();
-                textWriter.Write(writer, new Text(sortedSentences.ToList()));
-
-                writer.WriteLine("\n");
-
-                writer.WriteLine("-> Distinct words from exclamatory sentences with length 3");
-                var distinctWords = text.GetDistinctWordsBy(x => x.Type == SentenceTypes.Exclamatory, x => x.Length == 3);
-                foreach(var word in distinctWords)
+                Text text = null;
+                using (StreamReader reader = new StreamReader("text.txt"))
                 {
-                    writer.WriteLine(word.StringValue.ToLower());
+                    text = textParser.Parse(reader);
                 }
 
-                writer.WriteLine();
+                TextToStreamWriter textWriter = new TextToStreamWriter();
+                textWriter.SpaceDelimeter = defaultDelimeters.SpaceDelimeter;
+                using (StreamWriter writer = new StreamWriter("result.txt"))
+                {
+                    writer.WriteLine("-> Sorted sentences");
+                    var sortedSentences = text.GetSentences.OrderBy(x => x.GetNumberOfWords()).AsEnumerable();
+                    textWriter.Write(writer, new Text(sortedSentences.ToList()));
 
-                writer.WriteLine("-> In first sentence replace all words with length 5");
-                text.ReplaceWordsBy(6, "(it was replaced)", x => x.Length == 5, partsOfSentenceFactory);
-                textWriter.Write(writer, text);
+                    writer.WriteLine("\n");
 
-                writer.WriteLine("\n");
+                    writer.WriteLine("-> Distinct words from exclamatory sentences with length 3");
+                    var distinctWords = text.GetDistinctWordsBy(x => x.Type == SentenceTypes.Exclamatory, x => x.Length == 3);
+                    foreach (var word in distinctWords)
+                    {
+                        writer.WriteLine(word.StringValue.ToLower());
+                    }
 
-                writer.WriteLine("-> Removed all words with length 6 and not stats with vowel");
-                text.RemoveWordsBy(x => !x.IsStartsWithVowel() && x.Length == 6);
-                textWriter.Write(writer, text);
+                    writer.WriteLine();
 
+                    writer.WriteLine("-> In first sentence replace all words with length 5");
+                    text.ReplaceWordsBy(6, "(it was replaced)", x => x.Length == 5, partsOfSentenceFactory);
+                    textWriter.Write(writer, text);
+
+                    writer.WriteLine("\n");
+
+                    writer.WriteLine("-> Removed all words with length 6 and not stats with vowel");
+                    text.RemoveWordsBy(x => !x.IsStartsWithVowel() && x.Length == 6);
+                    textWriter.Write(writer, text);
+
+                }
+            }
+            catch(IOException ex)
+            {
+                Console.WriteLine(ex.Message);
             }
         }
     }
